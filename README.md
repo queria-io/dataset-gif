@@ -3,7 +3,7 @@
 デジタル庁の[政府相互運用性フレームワーク（GIF）](https://www.digital.go.jp/policies/data_strategy_government_interoperability_framework)
 が定める語彙を Queria のカタログ（[data.queria.io](https://data.queria.io/)）へ取り込むデータセットです。
 
-Queria のデータセットは、列名と列の日本語名をこの語彙に揃えています。決め方は
+Queria のデータセットは、日本の公的データの列名と、列の日本語名をこの語彙に揃えています。決め方は
 [docs.queria.io のデータセットの規約](https://docs.queria.io/publish/conventions#列名)にあります。
 
 ## データ出典
