@@ -7,6 +7,7 @@ select
     cast(code_list_no as integer) as code_list_no,
     code_list_name,
     code_list_name_en,
+    nullif(code_list_description, '') as code_list_description,
     code,
     value,
     nullif(description, '') as description

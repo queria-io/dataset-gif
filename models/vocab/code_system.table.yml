@@ -15,7 +15,7 @@ fields:
     description: 原典のシート名。個人・法人・行政・住所・地域・国土・医療など
   - name: item_number
     title: 分野内の番号
-    description: 分野の中の並び順。原典の通し番号は式で値を持たないため、取り込み時に振り直した
+    description: 分野の中の並び順。原典の通し番号は多くのシートで式になっていて値を持たないため、取り込み時に振り直した
   - name: category
     title: 分類
   - name: name

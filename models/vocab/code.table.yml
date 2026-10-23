@@ -16,6 +16,9 @@ fields:
     title: コード一覧名称
   - name: code_list_name_en
     title: コード一覧名称（英語）
+  - name: code_list_description
+    title: コード一覧の説明
+    description: コード一覧そのものの説明。準拠する規格（ISO 3166-1 など）や出典が書かれる。同じコード一覧の行はすべて同じ値
   - name: code
     title: コード
     description: Code 値。数字でも文字列で持つ
@@ -24,3 +27,4 @@ fields:
     description: Value 値
   - name: description
     title: 説明
+    description: 値ごとの説明
