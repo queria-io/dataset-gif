@@ -49,7 +49,12 @@ def latest_tag() -> str:
         check=True, capture_output=True, text=True,
     ).stdout
     tags = [line.split("refs/tags/")[1] for line in out.splitlines()]
-    return max((t for t in tags if re.search(r"\d", t)), key=version_key)
+    # 版の形（v2.4 など）のタグだけを比べる。rc やドラフトのタグ、日付入りのタグが
+    # 最新として選ばれないようにする
+    versions = [t for t in tags if re.fullmatch(r"v?\d+(\.\d+)*", t)]
+    if not versions:
+        raise SystemExit(f"{REPO}: 版の形のタグが無い（{tags}）")
+    return max(versions, key=version_key)
 
 
 def checkout(tag: str, dest: Path) -> Path:
@@ -78,6 +83,14 @@ def find_paths(root: Path) -> dict[str, Path]:
 def clean(value) -> str:
     # 項目名には「事業所住所 (*1)」のような注記の印が付く
     return re.sub(r"\s*\(\*\d+\)$", "", "" if value is None else str(value).strip())
+
+
+def sheet_rows(sheet) -> list[tuple]:
+    # read_only のシートは、Excel に寸法（dimension）が書かれていないと行が最後の値で
+    # 切れ、空行は () になる。列の位置で引くので、全行を同じ幅に揃えておく
+    rows = [tuple(r) for r in sheet.iter_rows(values_only=True)]
+    width = max(map(len, rows), default=0)
+    return [r + (None,) * (width - len(r)) for r in rows]
 
 
 def header_index(row, headers: dict[str, str]) -> dict[str, int]:
@@ -114,11 +127,11 @@ def term_rows(sheet) -> list[dict]:
             return columns, section, [*out, {"class_name": sheet.title, "section": section, **values}]
         return state
 
-    return reduce(step, (tuple(r) for r in sheet.iter_rows(values_only=True)), ({}, "base", []))[2]
+    return reduce(step, sheet_rows(sheet), ({}, "base", []))[2]
 
 
 # --- 438-1_コアデータモデル_コード一覧.xlsx --------------------------------
-# 1 シート。コード一覧の見出し行（No. と名称がある）の下に、値の行（Code と Value だけ）が続く
+# 1 シート。コード一覧の見出し行（No. と名称、説明がある）の下に、値の行（Code と Value と説明）が続く
 
 CODE_HEADERS = {
     "コード一覧No.": "code_list_no",
@@ -140,16 +153,18 @@ def code_rows(sheet) -> list[dict]:
         if cell["code_list_no"]:
             return columns, cell, out
         if current and cell["code"]:
+            # 見出し行の説明はコード一覧そのものの説明（準拠する規格など）。値の行の説明とは別に持つ
             heading = {k: current[k] for k in ("code_list_no", "code_list_name", "code_list_name_en")}
-            return columns, current, [*out, {**heading, "code": cell["code"], "value": cell["value"], "description": cell["description"]}]
+            value = {"code": cell["code"], "value": cell["value"], "description": cell["description"]}
+            return columns, current, [*out, {**heading, "code_list_description": current["description"], **value}]
         return state
 
-    return reduce(step, (tuple(r) for r in sheet.iter_rows(values_only=True)), ({}, None, []))[2]
+    return reduce(step, sheet_rows(sheet), ({}, None, []))[2]
 
 
 # --- 491-2_コード_コード一覧_*.xlsx ---------------------------------------
 # 「はじめに」以外のシートが分野。見出し行（通しNo で始まる）の位置はシートごとに違う。
-# 通しNo は =ROW()-1 という式で値を持たないので、シートの中の並び順で振り直す
+# 通しNo は多くのシートで =ROW()-1 のような式で値を持たないので、シートの中の並び順で振り直す
 
 CODE_SYSTEM_HEADERS = {
     "通しNo": "no",
@@ -174,7 +189,7 @@ def code_system_rows(sheet) -> list[dict]:
             return columns, [*out, {"field": sheet.title, "no": len(out) + 1, **values}]
         return state
 
-    return reduce(step, (tuple(r) for r in sheet.iter_rows(values_only=True)), ({}, []))[1]
+    return reduce(step, sheet_rows(sheet), ({}, []))[1]
 
 
 EXTRACT = {
@@ -203,8 +218,12 @@ def download_gif(tag: str | None = None, output_dir: Path = OUTPUT_DIR) -> dict[
 
         def one(name: str) -> int:
             source = paths[name].relative_to(root).as_posix()
+            # read_only のブックはファイルを開いたままにするので、読み終えたら閉じる
             book = openpyxl.load_workbook(paths[name], read_only=True)
-            rows = [{"version": tag, "source_path": source, **r} for r in EXTRACT[name](book)]
+            try:
+                rows = [{"version": tag, "source_path": source, **r} for r in EXTRACT[name](book)]
+            finally:
+                book.close()
             if not rows:
                 raise SystemExit(f"{source}: 1 行も取れなかった（Excel の形が変わった？）")
             write_csv(output_dir / f"{name}.csv", rows)
