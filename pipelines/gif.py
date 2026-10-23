@@ -16,6 +16,7 @@ import logging
 import re
 import subprocess
 import tempfile
+from decimal import Decimal
 from functools import reduce
 from pathlib import Path
 
@@ -34,21 +35,33 @@ FILES = {
 }
 
 
+def version_key(tag: str) -> tuple:
+    # GIF の版の小数部は小数として増える（v1.2 → v1.21 → v1.3、v2.01 → v2.1）。
+    # 整数の組で比べると v1.21 が v1.3 より新しくなるので、小数部は 0.xx として比べる
+    major, *rest = re.findall(r"\d+", tag)
+    minor = Decimal(f"0.{rest[0]}") if rest else Decimal(0)
+    return (int(major), minor, *(int(n) for n in rest[1:]))
+
+
 def latest_tag() -> str:
     out = subprocess.run(
         ["git", "ls-remote", "--tags", "--refs", f"https://github.com/{REPO}.git"],
         check=True, capture_output=True, text=True,
     ).stdout
     tags = [line.split("refs/tags/")[1] for line in out.splitlines()]
-    return max(tags, key=lambda t: tuple(int(n) for n in re.findall(r"\d+", t)))
+    return max((t for t in tags if re.search(r"\d", t)), key=version_key)
 
 
 def checkout(tag: str, dest: Path) -> Path:
-    # Excel だけ欲しいが、ファイル名に日付が入るものがあるので木ごと取って探す
+    # Excel だけ欲しいが、ファイル名に日付が入るものがあるので、使うディレクトリだけ
+    # sparse に取って探す（解説書などの大きなファイルは落とさない）
     subprocess.run(
-        ["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1", "--branch", tag, f"https://github.com/{REPO}.git", str(dest)],
+        ["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1", "--filter=blob:none", "--sparse",
+         "--branch", tag, f"https://github.com/{REPO}.git", str(dest)],
         check=True,
     )
+    dirs = sorted({prefix.split("/")[0] for prefix in FILES.values()})
+    subprocess.run(["git", "-C", str(dest), "sparse-checkout", "set", *dirs], check=True)
     return dest
 
 

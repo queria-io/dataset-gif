@@ -1,7 +1,7 @@
 schema: vocab
 name: term
 title: コアデータモデルの項目
-description: GIF のコアデータモデル（438_コアデータモデル_DMD.xlsx）の項目。1行が1クラス（個人・法人・住所・施設など）の1項目で、同じ英語名（name、nameKana など）が複数のクラスに出てくる。基礎項目（section = base）と、実装データモデルを設計するときに必要に応じて使う拡張項目（extension）がある。拡張項目には原典の No. が無く、no は NULL。
+description: GIF のコアデータモデル（438_コアデータモデル_DMD.xlsx）の項目。1行が1クラス（個人・法人・住所・施設など）の1項目で、同じ英語名（name、nameKana など）が複数のクラスに出てくる。基礎項目（section = base）と、実装データモデルを設計するときに必要に応じて使う拡張項目（extension）がある。拡張項目には原典の No. が無く、item_number は NULL。
 published: true
 sources:
   - path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
