@@ -1,0 +1,35 @@
+version: 2
+
+models:
+- name: term
+  description: GIF のコアデータモデルの項目。1行が1クラスの1項目。
+  access: public
+  columns:
+  - name: version
+    data_tests: [not_null]
+  - name: class_name
+    data_tests: [not_null]
+  - name: section
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: [base, extension]
+  - name: term_ja
+    data_tests: [not_null]
+  - name: term_en
+    data_tests: [not_null]
+- name: code
+  description: GIF のコアデータモデルのコード一覧。1行が1コード一覧の1値。
+  access: public
+  columns:
+  - name: code_list_name
+    data_tests: [not_null]
+  - name: code
+    data_tests: [not_null]
+- name: code_system
+  description: 行政が使うコード体系の一覧。1行が1コード体系。
+  access: public
+  columns:
+  - name: name
+    data_tests: [not_null]

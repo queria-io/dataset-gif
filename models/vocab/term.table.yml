@@ -1,0 +1,40 @@
+schema: vocab
+name: term
+title: コアデータモデルの項目
+description: GIF のコアデータモデル（438_コアデータモデル_DMD.xlsx）の項目。1行が1クラス（個人・法人・住所・施設など）の1項目で、同じ英語名（name、nameKana など）が複数のクラスに出てくる。基礎項目（section = base）と、実装データモデルを設計するときに必要に応じて使う拡張項目（extension）がある。拡張項目には原典の No. が無く、item_number は NULL。
+published: true
+sources:
+  - path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
+fields:
+  - name: version
+    title: 版
+    description: 取り込んだ GIF のタグ（v2.4 など）
+  - name: source_path
+    title: 取り込み元のファイル
+  - name: class_name
+    title: クラス
+    description: 原典のシート名。個人・法人・事業所・連絡先・住所・施設・土地・建物・イベントなど
+  - name: section
+    title: 区分
+    description: base（基礎項目）か extension（拡張項目）
+  - name: item_number
+    title: 項目番号
+    description: クラスの中の原典の No.。拡張項目は NULL
+  - name: term_ja
+    title: 項目名
+  - name: term_en
+    title: 項目名（英語）
+    description: 原典の英語名（camelCase）
+  - name: snake_case_name
+    title: 項目名（snake_case）
+    description: term_en を snake_case にしたもの（localGovernmentCode → local_government_code）。Queria のデータセットの列名はこれに揃える
+  - name: description
+    title: 説明
+  - name: format
+    title: 形式
+    description: "文字列・数値などの形式。pcd: で始まるものは vocab.code のコード一覧を指す"
+  - name: example
+    title: 記入例
+  - name: reference
+    title: 参考元
+    description: 名称や形式の参考にした語彙（IMI、schema.org など）

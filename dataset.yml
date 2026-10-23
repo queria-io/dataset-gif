@@ -1,0 +1,43 @@
+spec_version: "0.1"
+name: gif
+title: 政府相互運用性フレームワーク（GIF）
+description: |-
+  デジタル庁の政府相互運用性フレームワーク（GIF）が定める語彙。データの項目名・英語名・説明・形式と、コード一覧、行政が使うコード体系の一覧を持つ。毎月、GIF の最新の版（GitHub のタグ）から取り直す。
+  列名や項目の英語名を国の語彙に揃えたいとき、あるコード（地方公共団体コード、法人番号、医療機関コードなど）の定義と配布元を探したいときに使う。Queria のデータセットは列名をこの語彙の英語名に揃えている。
+
+  出典: デジタル庁「政府相互運用性フレームワーク（GIF）」（https://github.com/digital-go-jp/GIF）。
+  Queria が 438_コアデータモデル_DMD.xlsx、438-1_コアデータモデル_コード一覧.xlsx、491-2_コード_コード一覧_*.xlsx を表に変換して作成した。解説書（docx）の本文は含まない。
+  GIF のリポジトリは CC0 1.0 だが、配布物の XSD には CC BY 4.0 と記載されているため、CC BY 4.0 として出典を表示する。
+keywords:
+  - 語彙
+  - メタデータ
+  - データ標準
+  - コード
+  - データモデル
+  - デジタル庁
+  - GIF
+  - 政府相互運用性フレームワーク
+homepage: https://github.com/queria-io/dataset-gif
+language: ja
+
+licenses:
+  - CC-BY-4.0
+
+sources:
+  - title: デジタル庁 政府相互運用性フレームワーク（GIF）
+    path: https://www.digital.go.jp/policies/data_strategy_government_interoperability_framework
+  - title: digital-go-jp/GIF
+    path: https://github.com/digital-go-jp/GIF
+
+contributors:
+  - title: デジタル庁
+    path: https://www.digital.go.jp/
+    roles: [rightsHolder]
+
+spatial_coverage: [JP]
+update_frequency: monthly
+cover: 📖
+
+schemas:
+  - name: vocab
+    title: 語彙
