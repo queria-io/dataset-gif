@@ -4,7 +4,7 @@
 が定める語彙を Queria のカタログ（[data.queria.io](https://data.queria.io/)）へ取り込むデータセットです。
 
 Queria のデータセットは、列名と列の日本語名をこの語彙に揃えています。決め方は
-[docs.queria.io の説明の書き分け](https://docs.queria.io/publish/writing-descriptions)にあります。
+[docs.queria.io のデータセットの規約](https://docs.queria.io/publish/conventions#列名)にあります。
 
 ## データ出典
 
