@@ -2,7 +2,6 @@ schema: vocab
 name: code
 title: コード一覧
 description: GIF のコアデータモデルが形式として使うコード一覧（438-1_コアデータモデル_コード一覧.xlsx）。1行が1コード一覧の1値。vocab.term の format が pcd:性別コード一覧（コード） のように指すのがこの一覧。
-published: true
 sources:
   - path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
 fields:
