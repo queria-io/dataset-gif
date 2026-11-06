@@ -1,12 +1,15 @@
 schema: vocab
 name: code
 title: コード一覧
-description: GIF のコアデータモデルが形式として使うコード一覧（438-1_コアデータモデル_コード一覧.xlsx）。1行が1コード一覧の1値。vocab.term の format が pcd:性別コード一覧（コード） のように指すのがこの一覧。
+description: |-
+  GIF のコアデータモデルが形式として使うコード一覧です。1 行が 1 コード一覧の 1 値です。
+
+  - vocab.term の format が「pcd:性別コード一覧（コード）」のように指すのがこの一覧です
 sources:
   - path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
 fields:
   - name: version
-    title: 版
+    title: バージョン
   - name: source_path
     title: 取り込み元のファイル
   - name: code_list_no
@@ -17,10 +20,10 @@ fields:
     title: コード一覧名称（英語）
   - name: code_list_description
     title: コード一覧の説明
-    description: コード一覧そのものの説明。準拠する規格（ISO 3166-1 など）や出典が書かれる。同じコード一覧の行はすべて同じ値
+    description: コード一覧そのものの説明。準拠する規格や出典
   - name: code
     title: コード
-    description: Code 値。数字でも文字列で持つ
+    description: Code 値。数字も文字列で持ちます
   - name: value
     title: 名称
     description: Value 値

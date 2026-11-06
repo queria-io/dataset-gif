@@ -1,12 +1,16 @@
 schema: vocab
 name: code_system
 title: 行政のコード体系
-description: 行政が使うコード・ID の体系を分野ごとに一覧にしたもの（491-2_コード_コード一覧_*.xlsx）。1行が1コード体系で、名前・説明・公表組織と、コード表の URL を持つ。コードの値そのものは持たない。同じ名前のコード体系が別の組織から出ている行がある（通貨コードなど）。原典はデジタル庁が検索で集めたもので、網羅的ではない。
+description: |-
+  行政が使うコード・ID の体系を、分野ごとに一覧にしたものです。1 行が 1 コード体系で、名前・説明・公表組織とコード表の URL を持ちます。
+
+  - コードの値そのものは持ちません
+  - 原典はデジタル庁が検索で集めたもので、網羅的ではありません
 sources:
   - path: https://github.com/digital-go-jp/GIF/tree/main/490_その他
 fields:
   - name: version
-    title: 版
+    title: バージョン
   - name: source_path
     title: 取り込み元のファイル
   - name: field
@@ -14,14 +18,14 @@ fields:
     description: 原典のシート名。個人・法人・行政・住所・地域・国土・医療など
   - name: item_number
     title: 分野内の番号
-    description: 分野の中の並び順。原典の通し番号は多くのシートで式になっていて値を持たないため、取り込み時に振り直した
+    description: 分野の中の並び順。取り込み時に振り直しています
   - name: category
     title: 分類
   - name: name
     title: 名前
   - name: data_url
     title: データの URL
-    description: コード表の URL。「非公開」「未公表」のように URL でない値もそのまま入る
+    description: コード表の URL。「非公開」など URL でない値もあります
   - name: data_format
     title: データ形式
   - name: description
