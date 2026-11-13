@@ -49,7 +49,7 @@ WHERE term_ja LIKE '%郵便番号%';
 ```bash
 git submodule update --init
 uv sync
-scripts/build.sh   # queria sync -- python main.py
+scripts/build.sh   # fdl checkout → python main.py → fdl commit
 ```
 
 毎月 3 日に GitHub Actions の Sync が実行され、新しいタグがあれば取り込みます。
