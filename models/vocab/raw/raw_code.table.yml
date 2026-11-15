@@ -1,0 +1,4 @@
+schema: vocab
+name: raw_code
+description: コアデータモデルのコード一覧（data/gif/code.csv）（取得したままの形）
+annotations: { queria: { published: false } }

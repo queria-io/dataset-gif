@@ -1,0 +1,4 @@
+schema: vocab
+name: raw_term
+description: コアデータモデルの項目（data/gif/term.csv）（取得したままの形）
+annotations: { queria: { published: false } }
