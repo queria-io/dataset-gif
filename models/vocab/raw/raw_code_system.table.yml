@@ -1,4 +1,0 @@
-schema: vocab
-name: raw_code_system
-description: コード体系の一覧（data/gif/code_system.csv）（取得したままの形）
-annotations: { queria: { published: false } }
