@@ -11,4 +11,4 @@ select
     code,
     value,
     nullif(description, '') as description
-from read_csv('data/gif/code.csv', header = true, all_varchar = true)
+from {{ ref('raw_code') }}

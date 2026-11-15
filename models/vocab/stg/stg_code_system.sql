@@ -14,4 +14,4 @@ select
     nullif(description, '') as description,
     nullif(web_page, '') as web_page,
     nullif(publisher, '') as publisher
-from read_csv('data/gif/code_system.csv', header = true, all_varchar = true)
+from {{ ref('raw_code_system') }}

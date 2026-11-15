@@ -15,4 +15,4 @@ select
     nullif(format, '') as format,
     nullif(example, '') as example,
     nullif(reference, '') as reference
-from read_csv('data/gif/term.csv', header = true, all_varchar = true)
+from {{ ref('raw_term') }}
