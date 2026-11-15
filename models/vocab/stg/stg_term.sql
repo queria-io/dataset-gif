@@ -14,5 +14,7 @@ select
     nullif(description, '') as description,
     nullif(format, '') as format,
     nullif(example, '') as example,
-    nullif(reference, '') as reference
+    nullif(reference, '') as reference,
+    source_sheet,
+    cast(source_row as integer) as source_row
 from {{ ref('raw_term') }}
