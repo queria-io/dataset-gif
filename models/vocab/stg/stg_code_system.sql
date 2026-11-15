@@ -13,5 +13,7 @@ select
     nullif(data_format, '') as data_format,
     nullif(description, '') as description,
     nullif(web_page, '') as web_page,
-    nullif(publisher, '') as publisher
+    nullif(publisher, '') as publisher,
+    source_sheet,
+    cast(source_row as integer) as source_row
 from {{ ref('raw_code_system') }}

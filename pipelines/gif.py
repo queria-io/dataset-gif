@@ -1,7 +1,8 @@
 """デジタル庁 政府相互運用性フレームワーク（GIF）の語彙を取り出す。
 
 GIF は GitHub（digital-go-jp/GIF）でタグを切って版を出している。最新のタグを 1 つ決め、
-その版の Excel 3 つを CSV にする。版は各行の version 列に入れる。
+その版の Excel 3 つを raw.githubusercontent.com から取得して CSV にする。版は各行の version 列に、
+読んだシートと行番号は source_sheet・source_row に入れる。取得の記録は data/gif/source_file.parquet に書く。
 
 出力:
 - data/gif/term.csv（1行 = コアデータモデルの 1 項目。438_コアデータモデル_DMD.xlsx）
@@ -19,12 +20,17 @@ import tempfile
 from decimal import Decimal
 from functools import reduce
 from pathlib import Path
+from urllib.parse import quote
 
 import openpyxl
+
+from pipelines.source_file import write_source_files
+from shared.fetch import fetch_file
 
 logger = logging.getLogger("pipelines")
 
 REPO = "digital-go-jp/GIF"
+USER_AGENT = "dataset-gif (+https://github.com/queria-io/dataset-gif)"
 OUTPUT_DIR = Path("data/gif")
 
 # 取り込む Excel。491-2 はファイル名に日付が入って変わるので、接頭辞で探す
@@ -57,27 +63,32 @@ def latest_tag() -> str:
     return max(versions, key=version_key)
 
 
-def checkout(tag: str, dest: Path) -> Path:
-    # Excel だけ欲しいが、ファイル名に日付が入るものがあるので、使うディレクトリだけ
-    # sparse に取って探す（解説書などの大きなファイルは落とさない）
+def repo_files(tag: str, dest: Path) -> list[str]:
+    # ファイル名に日付が入るものがあるので、blob を落とさずに clone してファイルの一覧から探す
     subprocess.run(
-        ["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1", "--filter=blob:none", "--sparse",
+        ["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1", "--filter=blob:none", "--no-checkout",
          "--branch", tag, f"https://github.com/{REPO}.git", str(dest)],
         check=True,
     )
-    dirs = sorted({prefix.split("/")[0] for prefix in FILES.values()})
-    subprocess.run(["git", "-C", str(dest), "sparse-checkout", "set", *dirs], check=True)
-    return dest
+    out = subprocess.run(
+        ["git", "-C", str(dest), "-c", "core.quotePath=false", "ls-tree", "-r", "--name-only", "HEAD"],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    return out.splitlines()
 
 
-def find_paths(root: Path) -> dict[str, Path]:
-    def pick(prefix: str) -> Path:
-        found = sorted(root.glob(f"{prefix}*.xlsx"))
+def find_paths(files: list[str]) -> dict[str, str]:
+    def pick(prefix: str) -> str:
+        found = sorted(f for f in files if f.startswith(prefix) and f.endswith(".xlsx"))
         if len(found) != 1:
             raise SystemExit(f"{REPO}: {prefix}*.xlsx が {len(found)} 個ある")
         return found[0]
 
     return {name: pick(prefix) for name, prefix in FILES.items()}
+
+
+def file_url(tag: str, path: str) -> str:
+    return f"https://raw.githubusercontent.com/{REPO}/{quote(tag)}/{quote(path)}"
 
 
 def clean(value) -> str:
@@ -88,9 +99,14 @@ def clean(value) -> str:
 def sheet_rows(sheet) -> list[tuple]:
     # read_only のシートは、Excel に寸法（dimension）が書かれていないと行が最後の値で
     # 切れ、空行は () になる。列の位置で引くので、全行を同じ幅に揃えておく
-    rows = [tuple(r) for r in sheet.iter_rows(values_only=True)]
+    rows = [tuple(r) for r in sheet.iter_rows(min_row=1, values_only=True)]
     width = max(map(len, rows), default=0)
     return [r + (None,) * (width - len(r)) for r in rows]
+
+
+def at(sheet, n: int) -> dict:
+    # 行を読んだシートと、シートの中の行番号（Excel の行番号と同じ、1 始まり）
+    return {"source_sheet": sheet.title, "source_row": n}
 
 
 def header_index(row, headers: dict[str, str]) -> dict[str, int]:
@@ -114,7 +130,8 @@ TERM_HEADERS = {
 
 
 def term_rows(sheet) -> list[dict]:
-    def step(state, row):
+    def step(state, item):
+        n, row = item
         columns, section, out = state
         first = row[0] if row else None
         if first == "No.":
@@ -124,10 +141,10 @@ def term_rows(sheet) -> list[dict]:
         is_term = isinstance(first, int) or (first is None and section == "extension")
         if is_term and columns and row[columns["term_ja"]]:
             values = {k: clean(row[i]) for k, i in columns.items()}
-            return columns, section, [*out, {"class_name": sheet.title, "section": section, **values}]
+            return columns, section, [*out, {"class_name": sheet.title, "section": section, **values, **at(sheet, n)}]
         return state
 
-    return reduce(step, sheet_rows(sheet), ({}, "base", []))[2]
+    return reduce(step, enumerate(sheet_rows(sheet), start=1), ({}, "base", []))[2]
 
 
 # --- 438-1_コアデータモデル_コード一覧.xlsx --------------------------------
@@ -144,7 +161,8 @@ CODE_HEADERS = {
 
 
 def code_rows(sheet) -> list[dict]:
-    def step(state, row):
+    def step(state, item):
+        n, row = item
         columns, current, out = state
         if not columns:
             found = header_index(row, CODE_HEADERS)
@@ -156,10 +174,10 @@ def code_rows(sheet) -> list[dict]:
             # 見出し行の説明はコード一覧そのものの説明（準拠する規格など）。値の行の説明とは別に持つ
             heading = {k: current[k] for k in ("code_list_no", "code_list_name", "code_list_name_en")}
             value = {"code": cell["code"], "value": cell["value"], "description": cell["description"]}
-            return columns, current, [*out, {**heading, "code_list_description": current["description"], **value}]
+            return columns, current, [*out, {**heading, "code_list_description": current["description"], **value, **at(sheet, n)}]
         return state
 
-    return reduce(step, sheet_rows(sheet), ({}, None, []))[2]
+    return reduce(step, enumerate(sheet_rows(sheet), start=1), ({}, None, []))[2]
 
 
 # --- 491-2_コード_コード一覧_*.xlsx ---------------------------------------
@@ -179,17 +197,18 @@ CODE_SYSTEM_HEADERS = {
 
 
 def code_system_rows(sheet) -> list[dict]:
-    def step(state, row):
+    def step(state, item):
+        n, row = item
         columns, out = state
         if not columns:
             found = header_index(row, CODE_SYSTEM_HEADERS)
             return (found if "name" in found else {}), out
         if row[columns["no"]] is not None and row[columns["name"]]:
             values = {k: clean(row[i]) for k, i in columns.items() if k != "no"}
-            return columns, [*out, {"field": sheet.title, "no": len(out) + 1, **values}]
+            return columns, [*out, {"field": sheet.title, "no": len(out) + 1, **values, **at(sheet, n)}]
         return state
 
-    return reduce(step, sheet_rows(sheet), ({}, []))[1]
+    return reduce(step, enumerate(sheet_rows(sheet), start=1), ({}, []))[1]
 
 
 EXTRACT = {
@@ -213,21 +232,25 @@ def download_gif(tag: str | None = None, output_dir: Path = OUTPUT_DIR) -> dict[
     output_dir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmp:
-        root = checkout(tag, Path(tmp) / "GIF")
-        paths = find_paths(root)
+        paths = find_paths(repo_files(tag, Path(tmp) / "GIF"))
 
-        def one(name: str) -> int:
-            source = paths[name].relative_to(root).as_posix()
-            # read_only のブックはファイルを開いたままにするので、読み終えたら閉じる
-            book = openpyxl.load_workbook(paths[name], read_only=True)
-            try:
-                rows = [{"version": tag, "source_path": source, **r} for r in EXTRACT[name](book)]
-            finally:
-                book.close()
-            if not rows:
-                raise SystemExit(f"{source}: 1 行も取れなかった（Excel の形が変わった？）")
-            write_csv(output_dir / f"{name}.csv", rows)
-            logger.info("  %s: %d 行", name, len(rows))
-            return len(rows)
+    def one(name: str) -> tuple[int, dict]:
+        source = paths[name]
+        local = output_dir / Path(source).name
+        fetched = fetch_file(file_url(tag, source), local, user_agent=USER_AGENT)
+        # read_only のブックはファイルを開いたままにするので、読み終えたら閉じる
+        book = openpyxl.load_workbook(local, read_only=True)
+        try:
+            rows = [{"version": tag, "source_path": source, **r} for r in EXTRACT[name](book)]
+        finally:
+            book.close()
+        if not rows:
+            raise SystemExit(f"{source}: 1 行も取れなかった（Excel の形が変わった？）")
+        write_csv(output_dir / f"{name}.csv", rows)
+        logger.info("  %s: %d 行", name, len(rows))
+        page = f"https://github.com/{REPO}/blob/{quote(tag)}/{quote(source)}"
+        return len(rows), {**fetched, "page_url": page, "paths": [source]}
 
-        return {name: one(name) for name in FILES}
+    done = {name: one(name) for name in FILES}
+    write_source_files([f for _, f in done.values()], output_dir / "source_file.parquet")
+    return {name: n for name, (n, _) in done.items()}

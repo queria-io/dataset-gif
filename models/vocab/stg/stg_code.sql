@@ -10,5 +10,7 @@ select
     nullif(code_list_description, '') as code_list_description,
     code,
     value,
-    nullif(description, '') as description
+    nullif(description, '') as description,
+    source_sheet,
+    cast(source_row as integer) as source_row
 from {{ ref('raw_code') }}
