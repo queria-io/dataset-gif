@@ -1,5 +1,6 @@
-schema: vocab
-name: code_system
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: vocab.code_system
 title: 行政のコード体系
 description: |-
   行政が使うコード・ID の体系を、分野ごとに一覧にしたものです。1 行が 1 コード体系で、名前・説明・公表組織とコード表の URL を持ちます。
@@ -43,3 +44,4 @@ fields:
   - name: source_sha256
     title: 元のファイルの SHA-256
     description: この行を読んだファイルの SHA-256 です。source_file の sha256 に当たります
+---

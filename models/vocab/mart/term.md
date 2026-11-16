@@ -1,5 +1,6 @@
-schema: vocab
-name: term
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: vocab.term
 title: コアデータモデルの項目
 description: |-
   GIF のコアデータモデルの項目です。1 行が 1 クラス（個人・法人・住所・施設など）の 1 項目です。
@@ -50,3 +51,4 @@ fields:
   - name: source_sha256
     title: 元のファイルの SHA-256
     description: この行を読んだファイルの SHA-256 です。source_file の sha256 に当たります
+---

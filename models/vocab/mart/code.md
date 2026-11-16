@@ -1,5 +1,6 @@
-schema: vocab
-name: code
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: vocab.code
 title: コード一覧
 description: |-
   GIF のコアデータモデルが形式として使うコード一覧です。1 行が 1 コード一覧の 1 値です。
@@ -39,3 +40,4 @@ fields:
   - name: source_sha256
     title: 元のファイルの SHA-256
     description: この行を読んだファイルの SHA-256 です。source_file の sha256 に当たります
+---

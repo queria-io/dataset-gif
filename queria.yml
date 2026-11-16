@@ -1,6 +1,4 @@
-# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
-# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
-# Queria だけの項目（テーマ・カバー・列の意味）は annotations.queria に書く。
+$schema: https://queria.io/schemas/dataset/v1.json
 name: gif
 title: 政府相互運用性フレームワーク（GIF）
 description: |-
@@ -18,7 +16,6 @@ keywords:
   - 政府相互運用性フレームワーク
 homepage: https://github.com/queria-io/dataset-gif
 language: ja
-
 licenses:
   - CC-BY-4.0
 
@@ -35,13 +32,9 @@ contributors:
 
 spatial_coverage: [JP]
 update_frequency: monthly
-
 schemas:
   - name: vocab
     title: 語彙
 
-annotations:
-  queria:
-    themes: [other]
-    cover: 📖
-...
+themes: [other]
+cover: 📖
