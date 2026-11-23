@@ -7,7 +7,7 @@ description: |-
   - 原典はデジタル庁が検索で集めたもので、網羅的ではありません
 sources:
   - id: '490_'
-    path: https://github.com/digital-go-jp/GIF/tree/main/490_その他
+    url: https://github.com/digital-go-jp/GIF/tree/main/490_その他
 columns:
   - name: version
     title: バージョン

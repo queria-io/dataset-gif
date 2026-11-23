@@ -6,7 +6,7 @@ description: |-
   - vocab.term の format が「pcd:性別コード一覧（コード）」のように指すのがこの一覧です
 sources:
   - id: '430_'
-    path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
+    url: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
 columns:
   - name: version
     title: バージョン

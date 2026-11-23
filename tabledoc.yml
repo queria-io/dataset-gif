@@ -23,15 +23,15 @@ licenses:
 sources:
   - id: data_strategy_government_interoperability_framework
     title: デジタル庁 政府相互運用性フレームワーク（GIF）
-    path: https://www.digital.go.jp/policies/data_strategy_government_interoperability_framework
+    url: https://www.digital.go.jp/policies/data_strategy_government_interoperability_framework
   - id: gif
     title: digital-go-jp/GIF
-    path: https://github.com/digital-go-jp/GIF
+    url: https://github.com/digital-go-jp/GIF
 
 contributors:
   - id: digital
     title: デジタル庁
-    path: https://www.digital.go.jp/
+    url: https://www.digital.go.jp/
     roles: [rightsHolder]
 
 spatial_coverage: [JP]
