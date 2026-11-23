@@ -1,11 +1,11 @@
-$schema: https://queria.io/schemas/dataset/v1.json
+$schema: https://tabledoc.queria.io/schemas/dataset/v1.json
 name: gif
 title: 政府相互運用性フレームワーク（GIF）
 description: |-
   デジタル庁の政府相互運用性フレームワーク（GIF）が定める語彙です。データの項目名・英語名・形式と、コード一覧、行政が使うコード体系の一覧を収録し、毎月 GIF の最新のバージョンから取得し直します。
 
   出典：デジタル庁「政府相互運用性フレームワーク（GIF）」。Queria が加工したものです。
-keywords:
+topics:
   - 語彙
   - メタデータ
   - データ標準
@@ -20,13 +20,16 @@ licenses:
   - CC-BY-4.0
 
 sources:
-  - title: デジタル庁 政府相互運用性フレームワーク（GIF）
+  - id: data_strategy_government_interoperability_framework
+    title: デジタル庁 政府相互運用性フレームワーク（GIF）
     path: https://www.digital.go.jp/policies/data_strategy_government_interoperability_framework
-  - title: digital-go-jp/GIF
+  - id: gif
+    title: digital-go-jp/GIF
     path: https://github.com/digital-go-jp/GIF
 
 contributors:
-  - title: デジタル庁
+  - id: digital
+    title: デジタル庁
     path: https://www.digital.go.jp/
     roles: [rightsHolder]
 
@@ -36,5 +39,3 @@ schemas:
   - name: vocab
     title: 語彙
 
-themes: [other]
-cover: 📖
