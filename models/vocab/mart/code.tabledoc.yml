@@ -1,14 +1,13 @@
----
-$schema: https://queria.io/schemas/table/v1.json
-table: vocab.code
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: コード一覧
 description: |-
   GIF のコアデータモデルが形式として使うコード一覧です。1 行が 1 コード一覧の 1 値です。
 
   - vocab.term の format が「pcd:性別コード一覧（コード）」のように指すのがこの一覧です
 sources:
-  - path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
-fields:
+  - id: '430_'
+    path: https://github.com/digital-go-jp/GIF/tree/main/430_コアデータモデル
+columns:
   - name: version
     title: バージョン
   - name: source_path
@@ -40,4 +39,3 @@ fields:
   - name: source_sha256
     title: 元のファイルの SHA-256
     description: この行を読んだファイルの SHA-256 です。source_file の sha256 に当たります
----
