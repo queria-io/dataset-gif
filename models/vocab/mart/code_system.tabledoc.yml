@@ -16,11 +16,13 @@ columns:
   - name: field
     title: 分野
     description: 原典のシート名。個人・法人・行政・住所・地域・国土・医療など
+    dimension: categorical
   - name: item_number
     title: 分野内の番号
     description: 分野の中の並び順。取り込み時に振り直しています
   - name: category
     title: 分類
+    dimension: categorical
   - name: name
     title: 名前
   - name: data_url

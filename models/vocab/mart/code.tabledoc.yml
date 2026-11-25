@@ -16,6 +16,7 @@ columns:
     title: コード一覧番号
   - name: code_list_name
     title: コード一覧名称
+    dimension: categorical
   - name: code_list_name_en
     title: コード一覧名称（英語）
   - name: code_list_description
