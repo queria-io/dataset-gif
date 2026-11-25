@@ -15,9 +15,11 @@ columns:
   - name: class_name
     title: クラス
     description: 原典のシート名。個人・法人・住所・施設など
+    dimension: categorical
   - name: section
     title: 区分
     description: base（基礎項目）か extension（拡張項目）
+    dimension: categorical
   - name: item_number
     title: 項目番号
     description: クラスの中の原典の No.。拡張項目は NULL
